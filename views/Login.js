@@ -20,7 +20,7 @@ const Login = ({navigation}) => {
       console.log('token', userToken);
       if (userToken === 'abc') {
         setIsLoggedIn(true);
-        ssnavigation.navigate('Home');
+        navigation.navigate('Home');
       }
     };
     useEffect(() => {

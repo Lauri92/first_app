@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useUser} from '../hooks/ApiHooks';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
+import {KeyboardAvoidingView} from 'react-native';
+import {Platform} from 'react-native';
 
 const Login = ({navigation}) => {
   const {isLoggedIn, setIsLoggedIn, setUser} = useContext(MainContext);
@@ -35,20 +37,27 @@ const Login = ({navigation}) => {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text>Login</Text>
-      <LoginForm navigation={navigation} />
-      <Text>Register</Text>
-      <RegisterForm navigation={navigation} />
-    </View>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+    >
+      <View style={styles.form}>
+        <Text>Login</Text>
+        <LoginForm navigation={navigation} />
+        <Text>Register</Text>
+        <RegisterForm navigation={navigation} />
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    padding: 16,
+  },
+  form: {
+    flex: 1,
     justifyContent: 'center',
   },
 });

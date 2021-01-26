@@ -1,5 +1,5 @@
 import React, {useContext, useEffect} from 'react';
-import {StyleSheet, View, Text, Button} from 'react-native';
+import {StyleSheet, View, Button} from 'react-native';
 import PropTypes from 'prop-types';
 import {MainContext} from '../contexts/MainContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,6 +8,7 @@ import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
 import {KeyboardAvoidingView} from 'react-native';
 import {Platform} from 'react-native';
+import {Card, Text} from 'react-native-elements';
 
 const Login = ({navigation}) => {
   const {isLoggedIn, setIsLoggedIn, setUser} = useContext(MainContext);
@@ -41,11 +42,20 @@ const Login = ({navigation}) => {
       style={styles.container}
       behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
     >
+      <View style={styles.appTitle}>
+        <Text h1>App Name</Text>
+      </View>
       <View style={styles.form}>
-        <Text>Login</Text>
-        <LoginForm navigation={navigation} />
-        <Text>Register</Text>
-        <RegisterForm navigation={navigation} />
+        <Card>
+          <Card.Title h4>Login</Card.Title>
+          <Card.Divider />
+          <LoginForm navigation={navigation} />
+        </Card>
+        <Card>
+          <Card.Title h4>Register</Card.Title>
+          <Card.Divider />
+          <RegisterForm navigation={navigation} />
+        </Card>
       </View>
     </KeyboardAvoidingView>
   );
@@ -56,9 +66,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  form: {
+  appTitle: {
     flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
+  },
+  form: {
+    flex: 4,
   },
 });
 

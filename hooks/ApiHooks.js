@@ -4,10 +4,17 @@ import {baseUrl} from '../utils/variables';
 // general function for fetching
 const doFetch = async (url, options = {}) => {
   const response = await fetch(url, options);
-  if (!response.ok) {
+  const json = await response.json();
+  if (json.error) {
+    // if API response contains error message
+    throw new Error(json.message + ': ' + json.error);
+  } else if (!response.ok) {
+    // if API response does not contain error message
     throw new Error('doFetch failed');
+  } else {
+    // if all goes well
+    return json;
   }
-  return await response.json();
 };
 
 const useLoadMedia = () => {
@@ -15,20 +22,13 @@ const useLoadMedia = () => {
 
   const loadMedia = async (limit = 5) => {
     try {
-      const listResponse = await fetch(baseUrl + 'media?limit=' + limit);
-      const listJson = await listResponse.json();
-      console.log('response json data: ', listJson);
-
+      const listJson = await doFetch(baseUrl + 'media?limit=' + limit);
       const media = await Promise.all(
         listJson.map(async (item) => {
-          const fileResponse = await fetch(baseUrl + 'media/' + item.file_id);
-          const fileJson = fileResponse.json();
-          // console.log('media file data', json);
+          const fileJson = await doFetch(baseUrl + 'media/' + item.file_id);
           return fileJson;
         })
       );
-      console.log('media array data', media);
-
       setmediaArray(media);
     } catch (e) {
       console.error('loadMedia error', e);
@@ -71,14 +71,9 @@ const useUser = () => {
       body: JSON.stringify(inputs),
     };
     try {
-      const response = await fetch(baseUrl + 'users', fetchOptions);
-      const json = await response.json();
+      const json = await fetch(baseUrl + 'users', fetchOptions);
       console.log('register resp:', json);
-      if (response.ok) {
-        return json;
-      } else {
-        throw new Error(json.message + ': ' + json.error);
-      }
+      return json;
     } catch (e) {
       console.log('ApiHooks register', e.message);
       throw new Error(e.message);
@@ -91,13 +86,8 @@ const useUser = () => {
         method: 'GET',
         headers: {'x-access-token': token},
       };
-      const response = await fetch(baseUrl + 'users/user', options);
-      const userData = response.json();
-      if (response.ok) {
-        return userData;
-      } else {
-        throw new Error(userData.message);
-      }
+      const userData = await fetch(baseUrl + 'users/user', options);
+      return userData;
     } catch (error) {
       throw new Error(error.message);
     }

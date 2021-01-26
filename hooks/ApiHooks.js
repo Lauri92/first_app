@@ -1,6 +1,15 @@
 import {useEffect, useState} from 'react';
 import {baseUrl} from '../utils/variables';
 
+// general function for fetching
+const doFetch = async (url, options = {}) => {
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw new Error('doFetch failed');
+  }
+  return await response.json();
+};
+
 const useLoadMedia = () => {
   const [mediaArray, setmediaArray] = useState([]);
 
@@ -41,15 +50,8 @@ const useLogin = () => {
       body: JSON.stringify(userCredentials),
     };
     try {
-      const response = await fetch(baseUrl + 'login', options);
-      const userData = await response.json();
-      console.log('postLogin response status', response.status);
-      console.log('postLogin userData', userData);
-      if (response.ok) {
-        return userData;
-      } else {
-        throw new Error(userData.message);
-      }
+      const userData = await doFetch(baseUrl + 'login', options);
+      return userData;
     } catch (error) {
       throw new Error(error.message);
     }

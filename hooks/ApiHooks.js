@@ -96,4 +96,16 @@ const useUser = () => {
   return {postRegister, checkToken};
 };
 
-export {useLoadMedia, useLogin, useUser};
+const useTag = () => {
+  const getFilesByTag = async (tag) => {
+    try {
+      const tagList = await doFetch(baseUrl + 'tags/' + tag);
+      return tagList;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+  return {getFilesByTag};
+};
+
+export {useLoadMedia, useLogin, useUser, useTag};

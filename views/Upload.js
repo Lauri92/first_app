@@ -9,7 +9,14 @@ const Upload = () => {
 
   const {handleInputChange, inputs} = useUploadForm();
 
-  const doUpload = async () => {};
+  const doUpload = async () => {
+    const formData = new FormData();
+    // add text to formData
+    formData.append('title', inputs.title);
+    formData.append('description', inputs.description);
+    // add image to formData
+    formData.append('file', {uri: image});
+  };
 
   useEffect(() => {
     (async () => {
@@ -64,7 +71,7 @@ const Upload = () => {
       />
       <Button title="Choose from library" onPress={() => pickImage(true)} />
       <Button title="Use camera" onPress={() => pickImage(false)} />
-      <Button title="Upload file" />
+      <Button title="Upload file" onPress={doUpload} />
     </ScrollView>
   );
 };

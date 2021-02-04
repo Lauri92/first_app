@@ -128,7 +128,6 @@ const useMedia = () => {
     };
     try {
       const response = await axios(options);
-      console.log('axios', response);
       return response.data;
     } catch (e) {
       throw new Error(e.message);

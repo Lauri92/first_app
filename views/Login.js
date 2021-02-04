@@ -16,6 +16,7 @@ import {useUser} from '../hooks/ApiHooks';
 import LoginForm from '../components/LoginForm';
 import RegisterForm from '../components/RegisterForm';
 import {Card, Text, ListItem} from 'react-native-elements';
+import {ScrollView} from 'react-native-gesture-handler';
 
 const Login = ({navigation}) => {
   const {isLoggedIn, setIsLoggedIn, setUser} = useContext(MainContext);
@@ -45,56 +46,61 @@ const Login = ({navigation}) => {
   }, []);
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
-      enabled
-    >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.inner}>
-          <ImageBackground
-            source={require('../assets/bg.png')}
-            style={styles.image}
-          >
-            <View style={styles.form}>
-              <Card>
-                {formToggle ? (
-                  <>
-                    <Card.Title h5>Login</Card.Title>
-                    <Card.Divider />
-                    <LoginForm navigation={navigation} />
-                  </>
-                ) : (
-                  <>
-                    <Card.Title h5>Register</Card.Title>
-                    <Card.Divider />
-                    <RegisterForm navigation={navigation} />
-                  </>
-                )}
-                <ListItem
-                  onPress={() => {
-                    setFormToggle(!formToggle);
-                  }}
-                >
-                  <ListItem.Content>
-                    <Text style={styles.text}>
-                      {formToggle
-                        ? 'No account? Register here.'
-                        : 'Already registered? Login here.'}
-                    </Text>
-                  </ListItem.Content>
-                  <ListItem.Chevron />
-                </ListItem>
-              </Card>
-            </View>
-          </ImageBackground>
-        </View>
-      </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    <ScrollView contentContainerStyle={styles.sv}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+        enabled
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.inner}>
+            <ImageBackground
+              source={require('../assets/bg.png')}
+              style={styles.image}
+            >
+              <View style={styles.form}>
+                <Card>
+                  {formToggle ? (
+                    <>
+                      <Card.Title h5>Login</Card.Title>
+                      <Card.Divider />
+                      <LoginForm navigation={navigation} />
+                    </>
+                  ) : (
+                    <>
+                      <Card.Title h5>Register</Card.Title>
+                      <Card.Divider />
+                      <RegisterForm navigation={navigation} />
+                    </>
+                  )}
+                  <ListItem
+                    onPress={() => {
+                      setFormToggle(!formToggle);
+                    }}
+                  >
+                    <ListItem.Content>
+                      <Text style={styles.text}>
+                        {formToggle
+                          ? 'No account? Register here.'
+                          : 'Already registered? Login here.'}
+                      </Text>
+                    </ListItem.Content>
+                    <ListItem.Chevron />
+                  </ListItem>
+                </Card>
+              </View>
+            </ImageBackground>
+          </View>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
+  sv: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
   },

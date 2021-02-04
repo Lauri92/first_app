@@ -1,6 +1,6 @@
+import axios from 'axios';
 import {useEffect, useState} from 'react';
 import {baseUrl} from '../utils/variables';
-import Upload from '../views/Upload';
 
 // general function for fetching
 const doFetch = async (url, options = {}) => {
@@ -118,8 +118,8 @@ const useTag = () => {
   return {getFilesByTag};
 };
 
-const useMedia = (fd, token) => {
-  const upload = async () => {
+const useMedia = () => {
+  const upload = async (fd, token) => {
     const options = {
       method: 'POST',
       headers: {'x-access-token': token},
@@ -129,7 +129,7 @@ const useMedia = (fd, token) => {
     try {
       const response = await axios(options);
       console.log('axios', response);
-      return response;
+      return response.data;
     } catch (e) {
       throw new Error(e.message);
     }

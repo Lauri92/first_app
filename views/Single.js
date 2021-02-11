@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import {uploadsUrl} from '../utils/variables';
 import {Card, Avatar, ListItem, Text} from 'react-native-elements';
 import moment from 'moment';
+import {Video} from 'expo-av';
 
 const Single = ({route}) => {
   const {file} = route.params;
@@ -12,11 +13,21 @@ const Single = ({route}) => {
       <Card.Title h4>{file.title}</Card.Title>
       <Card.Title>{moment(file.time_added).format('LLL')}</Card.Title>
       <Card.Divider />
-      <Card.Image
-        source={{uri: uploadsUrl + file.filename}}
-        style={StyleSheet.image}
-        PlaceholderContent={<ActivityIndicator />}
-      />
+      <>
+        {file.media_type === 'image' ? (
+          <Card.Image
+            source={{uri: uploadsUrl + file.filename}}
+            style={StyleSheet.image}
+            PlaceholderContent={<ActivityIndicator />}
+          />
+        ) : (
+          <Video
+            source={{uri: uploadsUrl + file.filename}}
+            style={StyleSheet.image}
+            useNativeControls={true}
+          />
+        )}
+      </>
       <Card.Divider />
       <Text style={styles.description}>{file.description}</Text>
       <ListItem>

@@ -16,6 +16,7 @@ const Single = ({route}) => {
   const [owner, setOwner] = useState({});
   const {getFilesByTag} = useTag();
   const {getUser} = useUser();
+  const [videoRef, setVideoRef] = useState(null);
 
   const fetchAvatar = async () => {
     try {
@@ -38,14 +39,52 @@ const Single = ({route}) => {
   };
 
   const unlock = async () => {
-    await ScreenOrientation.unlockAsync();
+    try {
+      await ScreenOrientation.unlockAsync();
+    } catch (error) {
+      console.error('unlock ', error.message);
+    }
+  };
+
+  const lock = async () => {
+    try {
+      await ScreenOrientation.lockAsync(
+        ScreenOrientation.OrientationLock.PORTRAIT_UP
+      );
+    } catch (error) {
+      console.error('lock', error.message);
+    }
+  };
+
+  const handleVideoRef = (component) => {
+    setVideoRef(component);
+  };
+
+  const showVideoInFullScreen = async () => {
+    try {
+      if (videoRef) await videoRef.presentFullscreenPlayer();
+    } catch (error) {
+      console.error('fullscreen', error.message);
+    }
   };
 
   useEffect(() => {
     unlock();
     fetchAvatar();
     fetchOwner();
-  }, []);
+
+    const orientSub = ScreenOrientation.addOrientationChangeListener((evt) => {
+      console.log('orientation', evt);
+      if (evt.orientationInfo.orientation > 2) {
+        showVideoInFullScreen();
+      }
+    });
+
+    return () => {
+      ScreenOrientation.removeOrientationChangeListener(orientSub);
+      lock();
+    };
+  }, [videoRef]);
 
   return (
     <ScrollView>
@@ -61,15 +100,21 @@ const Single = ({route}) => {
           />
         ) : (
           <Video
+            ref={handleVideoRef}
             source={{uri: uploadsUrl + file.filename}}
             style={styles.image}
             useNativeControls={true}
+            resizeMode="stretch"
+            onError={(err) => {
+              console.error('video', err);
+            }}
+            posterSource={{uri: uploadsUrl + file.screenshot}}
           />
         )}
         <Card.Divider />
         <Text style={styles.description}>{file.description}</Text>
         <ListItem>
-          <Avatar source={{uri: 'http://placekitten.com/180'}} />
+          <Avatar source={{uri: avatar}} />
           <Text>{owner.username}</Text>
         </ListItem>
       </Card>

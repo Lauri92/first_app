@@ -104,6 +104,19 @@ const useUser = () => {
     }
   };
 
+  const getUser = async (id, token) => {
+    try {
+      const options = {
+        method: 'GET',
+        headers: {'x-access-token': token},
+      };
+      const userData = await doFetch(baseUrl + 'users/' + id, options);
+      return userData;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  };
+
   const checkIsUserAvailable = async (username) => {
     try {
       const result = await doFetch(baseUrl + 'users/username/' + username);
@@ -113,7 +126,7 @@ const useUser = () => {
     }
   };
 
-  return {postRegister, checkToken, checkIsUserAvailable};
+  return {postRegister, checkToken, checkIsUserAvailable, getUser};
 };
 
 const useTag = () => {

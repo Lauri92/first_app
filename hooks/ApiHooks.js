@@ -19,37 +19,30 @@ const doFetch = async (url, options = {}) => {
   }
 };
 
-const useLoadMedia = (all = false, limit) => {
+const useLoadMedia = (myFilesOnly, userId) => {
   const [mediaArray, setmediaArray] = useState([]);
   const {update} = useContext(MainContext);
 
-  const loadMedia = async (limit = 5) => {
+  const loadMedia = async () => {
     try {
-      let listJson;
-      if (all) {
-        listJson = await doFetch(baseUrl + 'media?limit=' + limit);
-      } else {
-        listJson = await doFetch(baseUrl + 'tags/' + appIdentifier);
-      }
-      const media = await Promise.all(
+      const listJson = await doFetch(baseUrl + 'tags/' + appIdentifier);
+      let media = await Promise.all(
         listJson.map(async (item) => {
           const fileJson = await doFetch(baseUrl + 'media/' + item.file_id);
           return fileJson;
         })
       );
+      if (myFilesOnly) {
+        media = media.filter((item) => item.user_id === userId);
+      }
       setmediaArray(media);
     } catch (e) {
       console.error('loadMedia error', e);
     }
   };
-
   useEffect(() => {
-    // loads everything
-    // loadMedia(true, 10);
-    // loads by app id
     loadMedia();
   }, [update]);
-
   return mediaArray;
 };
 
@@ -172,7 +165,38 @@ const useMedia = () => {
       throw new Error(e.message);
     }
   };
-  return {upload};
+
+  const updateFile = async (fileId, fileInfo, token) => {
+    const options = {
+      method: 'PUT',
+      headers: {
+        'x-access-token': token,
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(fileInfo),
+    };
+    try {
+      const result = await doFetch(baseUrl + 'media/' + fileId, options);
+      return result;
+    } catch (error) {
+      throw new Error('updateFile error: ' + error.message);
+    }
+  };
+
+  const deleteFile = async (fileId, token) => {
+    const options = {
+      method: 'DELETE',
+      headers: {'x-access-token': token},
+    };
+    try {
+      const result = await doFetch(baseUrl + 'media/' + fileId, options);
+      return result;
+    } catch (error) {
+      throw new Error('deleteFile error: ' + error.message);
+    }
+  };
+
+  return {upload, updateFile, deleteFile};
 };
 
 export {useLoadMedia, useLogin, useUser, useTag, useMedia};
